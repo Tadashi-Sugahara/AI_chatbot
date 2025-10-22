@@ -21,7 +21,7 @@ def text_to_speech(text):
             # 音声を再生
             # 再生速度を変更 (1.5倍速)
             if lang == 'ja':
-                tunning_speed = 1.3
+                tunning_speed = 1.2
             else:
                 tunning_speed = 1.0
             new_frame_rate = int(segment_audio.frame_rate * tunning_speed)
