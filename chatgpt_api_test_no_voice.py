@@ -1,9 +1,15 @@
 from openai import OpenAI
+import os
+from dotenv import load_dotenv
 
-# OpenAI クライアントを初期化（テスト用のダミーAPIキー）
-client = OpenAI(
-    api_key="YOUR_API_KEY_HERE"  # 実際のAPIキーに置き換えてください
-)
+# .envファイルから環境変数を読み込み
+load_dotenv()
+
+# OpenAI クライアントを初期化
+api_key = os.getenv('OPENAI_API_KEY')
+if not api_key:
+    raise ValueError("OPENAI_API_KEYが.envファイルに設定されていません")
+client = OpenAI(api_key=api_key)
 
 def chat_with_gpt(role, prompt):
     try:
