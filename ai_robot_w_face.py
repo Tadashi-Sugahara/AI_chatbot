@@ -91,8 +91,8 @@ def main():
         exit(1)
 
     # GIF画像のパスを指定
-    gif_path1 = "output/torakichi_animation.gif"
-    gif_path2 = "output/torakichi_speaking.gif"
+    gif_path1 = "image/torakichi_animation.gif"
+    gif_path2 = "image/torakichi_speaking.gif"
 
     # 表示するピクセル数を指定
     display_width = 1024
