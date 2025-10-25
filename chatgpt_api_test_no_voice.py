@@ -16,7 +16,7 @@ def chat_with_gpt(role, prompt):
         # ChatGPT APIを呼び出す
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",  # モデルを指定
-            #model="gpt-4o",  # モデルを指定
+            #model="gpt-4",  # モデルを指定
             messages=[
                 {"role": "system", "content": role},
                 {"role": "user", "content": prompt},
