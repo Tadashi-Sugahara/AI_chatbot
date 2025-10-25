@@ -13,6 +13,7 @@ def speech_to_text():
 
     # Capture audio from the microphone
     # マイクから音声を取得
+    audio = None
     with sr.Microphone() as source:
         print("Say something!")
         # ノイズの調整
@@ -23,24 +24,31 @@ def speech_to_text():
             print("Audio captured successfully.")
         except sr.WaitTimeoutError:
             print("Listening timed out while waiting for phrase to start")
+            return "音声の待機がタイムアウトしました"
         except sr.RequestError as e:
             print(f"Could not request results; {e}")
+            return "音声認識サービスエラーが発生しました"
         except sr.UnknownValueError:
             print("Could not understand audio")
+            return "音声を理解できませんでした"
         except Exception as e:
             print(f"An error occurred: {e}")
+            return "音声取得中にエラーが発生しました"
 
     # Convert speech to text
+    if audio is None:
+        return "音声データが取得できませんでした"
+    
     try:
         text = r.recognize_google(audio, language="ja-JP")
         #print("Recognized text:", text)
         return text
     except sr.UnknownValueError:
         print("Unable to recognize speech (Time out)")
-        return False
+        return "音声を認識できませんでした"
     except sr.RequestError as e:
         print("Error:", str(e))
-        return False
+        return "音声認識エラーが発生しました"
 
 if __name__ == "__main__":
     text = speech_to_text()
