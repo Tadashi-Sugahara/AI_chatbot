@@ -89,12 +89,12 @@ class VoiceChatBot:
                     # 環境音の調整
                     self.recognizer.adjust_for_ambient_noise(source, duration=0.5)
                     
-                # 音声を録音
-                audio = self.recognizer.listen(
-                    source=self.microphone,
-                    timeout=self.timeout,
-                    phrase_time_limit=self.phrase_timeout
-                )
+                    # 音声を録音（with文内で実行）
+                    audio = self.recognizer.listen(
+                        source,
+                        timeout=self.timeout,
+                        phrase_time_limit=self.phrase_timeout
+                    )
             
             print("🔄 音声を認識中...")
             
