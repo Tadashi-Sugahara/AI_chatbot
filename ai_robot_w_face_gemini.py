@@ -33,20 +33,62 @@ if not api_key_gemini:
     raise ValueError("GOOGLE_API_KEYが.envファイルに設定されていません")
 client = genai.Client(api_key=api_key_gemini)
 
-def chat_with_gemini(role, prompt):
+# 会話セッションを保持するためのグローバル変数
+chat_session = None
+system_instruction = None
+
+def initialize_chat_session(role):
+    """チャットセッションを初期化"""
+    global chat_session, system_instruction
+    system_instruction = role
+    
+    # チャットセッションを作成
+    chat_session = client.chats.create(
+        model='models/gemini-2.5-flash',
+        config={
+            'system_instruction': system_instruction
+        }
+    )
+    print("[チャットセッションを初期化しました]")
+
+def chat_with_gemini(role, prompt, use_history=True):
+    """会話履歴を保持しながらGemini APIと対話"""
+    global chat_session, system_instruction
+    
     try:
         # Gemini APIを呼び出す
         print(f"API呼び出し中... モデル: models/gemini-2.5-flash")
-        full_prompt = f"{role}\n\nユーザー: {prompt}"
-        response = client.models.generate_content(
-            model='models/gemini-2.5-flash',
-            contents=full_prompt
-        )
+        
+        # 会話履歴を使用する場合
+        if use_history:
+            # セッションが未初期化の場合は初期化
+            if chat_session is None:
+                initialize_chat_session(role)
+            
+            # チャットセッションで送信
+            response = chat_session.send_message(prompt)
+            result_text = response.text
+        else:
+            # 履歴なしの場合（従来の方法）
+            full_prompt = f"{role}\n\nユーザー: {prompt}"
+            response = client.models.generate_content(
+                model='models/gemini-2.5-flash',
+                contents=full_prompt
+            )
+            result_text = response.text
+        
         print(f"API応答受信完了")
-        return response.text
+        return result_text
     except Exception as e:
         print(f"APIエラー詳細: {type(e).__name__}: {e}")
         return f"エラーが発生しました: {e}"
+
+def reset_conversation_history():
+    """会話履歴をリセット"""
+    global chat_session, system_instruction
+    chat_session = None
+    system_instruction = None
+    print("[会話履歴をリセットしました]")
 
 def open_gif_image(gif_path, width, height):
     # Tkinterウィンドウを作成
@@ -121,11 +163,14 @@ def main():
 
     # GIFアニメーションを表示するスレッドを開始
     root, label, gif1, update_frame = open_gif_image(gif_path1, display_width, display_height)
-    
+
     # Geminiとの対話を別スレッドで実行
     def chat_gemini_interaction():
         nonlocal gif1
         try:
+            # 会話履歴をリセット
+            reset_conversation_history()
+            
             # GIFを切り替え
             gif2 = Image.open(gif_path2)
             label.config(image=None)  # 現在の画像をクリア
