@@ -28,17 +28,23 @@ def speech_to_text_safe():
         # recognizer と microphone オブジェクトを作成
         r = sr.Recognizer()
         
+        # 音声認識の精度を向上させる設定
+        r.energy_threshold = 300  # エネルギー閾値を下げて小さい声も拾う（デフォルト: 300-400）
+        r.dynamic_energy_threshold = True  # 動的にエネルギー閾値を調整
+        r.pause_threshold = 1.0  # 発話の終了と判断するまでの無音時間（秒）を長くする
+        
         with sr.Microphone() as source:
             print("音声入力待機中...")
-            # ノイズ調整
-            r.adjust_for_ambient_noise(source, duration=0.5)
+            # ノイズ調整の時間を長くしてより正確に
+            r.adjust_for_ambient_noise(source, duration=1.0)
             
-            # 音声録音 (タイムアウト10秒、フレーズ長20秒)
-            audio = r.listen(source, timeout=10, phrase_time_limit=20)
+            print("話してください...")
+            # 音声録音 (タイムアウト10秒、フレーズ長30秒)
+            audio = r.listen(source, timeout=10, phrase_time_limit=30)
             
             print("音声を認識中...")
-            # Google音声認識を使用
-            text = r.recognize_google(audio, language='ja-JP')
+            # Google音声認識を使用（show_all=Falseで最良の結果のみ）
+            text = r.recognize_google(audio, language='ja-JP', show_all=False)
             return text
             
     except sr.UnknownValueError:
