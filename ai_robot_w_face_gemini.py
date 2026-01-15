@@ -4,7 +4,7 @@ import sys
 import tkinter as tk
 from PIL import Image, ImageTk
 from dotenv import load_dotenv
-import google.genai as genai
+import google.generativeai as genai
 from audio2text_safe import speech_to_text
 from text2audio_safe import text_to_speech
 from threading import Thread
@@ -17,16 +17,14 @@ load_dotenv()
 api_key = os.getenv('GOOGLE_API_KEY')
 if not api_key:
     raise ValueError("GOOGLE_API_KEYが.envファイルに設定されていません")
-client = genai.Client(api_key=api_key)
+genai.configure(api_key=api_key)
 
 def chat_with_gemini(role, prompt):
     try:
         # Gemini APIを呼び出す
         full_prompt = f"{role}\n\nユーザー: {prompt}"
-        response = client.models.generate_content(
-            model='gemini-1.5-flash',
-            contents=full_prompt
-        )
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(full_prompt)
         return response.text
     except Exception as e:
         return f"エラーが発生しました: {e}"
