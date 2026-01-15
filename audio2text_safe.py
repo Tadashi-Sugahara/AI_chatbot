@@ -33,8 +33,8 @@ def speech_to_text_safe():
             # ノイズ調整
             r.adjust_for_ambient_noise(source, duration=0.5)
             
-            # 音声録音 (タイムアウト5秒、フレーズ長10秒)
-            audio = r.listen(source, timeout=5, phrase_time_limit=10)
+            # 音声録音 (タイムアウト10秒、フレーズ長20秒)
+            audio = r.listen(source, timeout=10, phrase_time_limit=20)
             
             print("音声を認識中...")
             # Google音声認識を使用
