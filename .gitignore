@@ -1,0 +1,29 @@
+# 環境変数ファイル
+.env
+
+# Python関連
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.pytest_cache/
+venv/
+env/
+ENV/
+
+# 一時ファイル
+*.tmp
+*.log
+output/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS関連
+.DS_Store
+Thumbs.db
