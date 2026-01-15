@@ -121,7 +121,7 @@ def main():
 
     # GIFアニメーションを表示するスレッドを開始
     root, label, gif1, update_frame = open_gif_image(gif_path1, display_width, display_height)
-
+    
     # Geminiとの対話を別スレッドで実行
     def chat_gemini_interaction():
         nonlocal gif1
