@@ -9,6 +9,11 @@ def text_to_speech_dummy(text):
     print(f"[音声出力]: {text}")
     return True
 
+def convert_halfwidth_to_fullwidth_numbers(text):
+    """半角数字を全角数字に変換"""
+    trans_table = str.maketrans('0123456789', '０１２３４５６７８９')
+    return text.translate(trans_table)
+
 def text_to_speech_safe(text):
     """安全な音声出力 - エラー時はFalseを返す"""
     temp_file = None
@@ -17,6 +22,9 @@ def text_to_speech_safe(text):
         from pydub import AudioSegment
         from pydub.playback import play
         import re
+        
+        # 半角数字を全角数字に変換
+        text = convert_halfwidth_to_fullwidth_numbers(text)
         
         # テキストを言語ごとに分割
         segments = re.findall(r'[^\x00-\x7F]+|[\x00-\x7F]+', text)
