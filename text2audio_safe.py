@@ -9,13 +9,22 @@ def text_to_speech_dummy(text):
     print(f"[音声出力]: {text}")
     return True
 
+def convert_halfwidth_to_fullwidth_numbers(text):
+    """半角数字を全角数字に変換"""
+    trans_table = str.maketrans('0123456789', '０１２３４５６７８９')
+    return text.translate(trans_table)
+
 def text_to_speech_safe(text):
     """安全な音声出力 - エラー時はFalseを返す"""
+    temp_file = None
     try:
         from gtts import gTTS
         from pydub import AudioSegment
         from pydub.playback import play
         import re
+        
+        # 半角数字を全角数字に変換
+        text = convert_halfwidth_to_fullwidth_numbers(text)
         
         # テキストを言語ごとに分割
         segments = re.findall(r'[^\x00-\x7F]+|[\x00-\x7F]+', text)
@@ -30,41 +39,50 @@ def text_to_speech_safe(text):
                 temp_file = f"temp_audio_{hash(segment)}.mp3"
                 tts.save(temp_file)
                 
-                # 音声再生
-                segment_audio = AudioSegment.from_mp3(temp_file)
-                
-                # 再生速度調整
-                if lang == 'ja':
-                    speed_factor = 1.3
-                else:
-                    speed_factor = 1.0
+                try:
+                    # 音声再生
+                    segment_audio = AudioSegment.from_mp3(temp_file)
                     
-                new_frame_rate = int(segment_audio.frame_rate * speed_factor)
-                faster_audio = segment_audio._spawn(
-                    segment_audio.raw_data, 
-                    overrides={'frame_rate': new_frame_rate}
-                )
-                faster_audio = faster_audio.set_frame_rate(segment_audio.frame_rate)
-                
-                # エラー出力を一時的に抑制
-                original_stderr = sys.stderr
-                try:
-                    sys.stderr = open(os.devnull, 'w')
-                    play(faster_audio)
+                    # 再生速度調整
+                    if lang == 'ja':
+                        speed_factor = 1.3
+                    else:
+                        speed_factor = 1.0
+                        
+                    new_frame_rate = int(segment_audio.frame_rate * speed_factor)
+                    faster_audio = segment_audio._spawn(
+                        segment_audio.raw_data, 
+                        overrides={'frame_rate': new_frame_rate}
+                    )
+                    faster_audio = faster_audio.set_frame_rate(segment_audio.frame_rate)
+                    
+                    # エラー出力を一時的に抑制
+                    original_stderr = sys.stderr
+                    try:
+                        sys.stderr = open(os.devnull, 'w')
+                        play(faster_audio)
+                    finally:
+                        sys.stderr.close()
+                        sys.stderr = original_stderr
                 finally:
-                    sys.stderr.close()
-                    sys.stderr = original_stderr
-                
-                # 一時ファイル削除
-                try:
-                    os.remove(temp_file)
-                except:
-                    pass
+                    # 一時ファイル削除（確実に実行）
+                    if temp_file and os.path.exists(temp_file):
+                        try:
+                            os.remove(temp_file)
+                        except Exception as e:
+                            print(f"[ファイル削除エラー]: {temp_file} - {e}")
+                    temp_file = None
                     
         return True
         
     except Exception as e:
         print(f"[音声出力エラー]: {str(e)[:50]}...")
+        # エラー時も一時ファイルを削除
+        if temp_file and os.path.exists(temp_file):
+            try:
+                os.remove(temp_file)
+            except:
+                pass
         return False
 
 # 音声出力の実装を選択

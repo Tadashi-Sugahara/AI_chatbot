@@ -40,11 +40,11 @@ def open_gif_image(gif_path, width, height):
     root = tk.Tk()
     root.title("Robot Face GIF")
 
-    # 全画面表示を有効にする
-    root.attributes('-fullscreen', True)
-
-    # Escapeキーで全画面解除
-    root.bind("<Escape>", lambda event: root.attributes('-fullscreen', False))
+    # ウィンドウサイズを設定（全画面表示なし）
+    root.geometry(f"{width}x{height}")
+    
+    # ウィンドウサイズ変更を禁止（オプション）
+    root.resizable(False, False)
 
     # GIF画像を読み込む
     try:
@@ -91,8 +91,8 @@ def main():
         exit(1)
 
     # GIF画像のパスを指定
-    gif_path1 = "output/torakichi_animation.gif"
-    gif_path2 = "output/torakichi_speaking.gif"
+    gif_path1 = "image/torakichi_animation.gif"
+    gif_path2 = "image/torakichi_speaking.gif"
 
     # 表示するピクセル数を指定
     display_width = 1024

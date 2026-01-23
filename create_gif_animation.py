@@ -29,16 +29,18 @@ def create_gif_animation(image_paths, output_path, duration=1000):
 
 
 if __name__ == "__main__":
-    # 画像パスのリストを指定
-    image_paths = [
+    # torakichi_speaking.gif を作成（口を開く動作）
+    image_paths1 = [
         "image/torakichi_normal.png",
         "image/torakichi_openmouth.png"
     ]
+    output_path1 = "image/torakichi_speaking.gif"
+    create_gif_animation(image_paths1, output_path1, duration=800)
     
-    # 出力GIFファイルのパス
-    output_path = "output/torakichi_speaking.gif"
-
-    # 出力ディレクトリが存在しない場合は作成
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-
-    create_gif_animation(image_paths, output_path)
+    # torakichi_animation.gif を作成（ウィンク動作）
+    image_paths2 = [
+        "image/torakichi_normal.png",
+        "image/torakichi_wink.png"
+    ]
+    output_path2 = "image/torakichi_animation.gif"
+    create_gif_animation(image_paths2, output_path2, duration=1000)

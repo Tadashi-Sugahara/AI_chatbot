@@ -1,4 +1,4 @@
-openai
+google-genai
 python-dotenv
 requests
 dotenv
@@ -8,4 +8,5 @@ pyaudio
 gtts
 pydub
 pyserial
+pillow
 
