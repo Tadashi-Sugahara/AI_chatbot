@@ -35,47 +35,33 @@ client = genai.Client(api_key=api_key_gemini)
 
 # 会話セッションを保持するためのグローバル変数
 chat_session = None
-system_instruction = None
 
 def initialize_chat_session(role):
     """チャットセッションを初期化"""
-    global chat_session, system_instruction
-    system_instruction = role
-    
-    # チャットセッションを作成
+    global chat_session
     chat_session = client.chats.create(
-        model='models/gemini-2.5-flash',
-        config={
-            'system_instruction': system_instruction
-        }
+        model="models/gemini-2.5-flash",
+        config=genai.types.GenerateContentConfig(
+            system_instruction=role
+        )
     )
     print("[チャットセッションを初期化しました]")
 
 def chat_with_gemini(role, prompt, use_history=True):
     """会話履歴を保持しながらGemini APIと対話"""
-    global chat_session, system_instruction
+    global chat_session
     
     try:
         # Gemini APIを呼び出す
         print(f"API呼び出し中... モデル: models/gemini-2.5-flash")
         
-        # 会話履歴を使用する場合
-        if use_history:
-            # セッションが未初期化の場合は初期化
-            if chat_session is None:
-                initialize_chat_session(role)
-            
-            # チャットセッションで送信
-            response = chat_session.send_message(prompt)
-            result_text = response.text
-        else:
-            # 履歴なしの場合（従来の方法）
-            full_prompt = f"{role}\n\nユーザー: {prompt}"
-            response = client.models.generate_content(
-                model='models/gemini-2.5-flash',
-                contents=full_prompt
-            )
-            result_text = response.text
+        # セッションが未初期化の場合は初期化
+        if chat_session is None:
+            initialize_chat_session(role)
+        
+        # メッセージを送信
+        response = chat_session.send_message(prompt)
+        result_text = response.text
         
         print(f"API応答受信完了")
         return result_text
@@ -85,9 +71,8 @@ def chat_with_gemini(role, prompt, use_history=True):
 
 def reset_conversation_history():
     """会話履歴をリセット"""
-    global chat_session, system_instruction
+    global chat_session
     chat_session = None
-    system_instruction = None
     print("[会話履歴をリセットしました]")
 
 def open_gif_image(gif_path, width, height):
