@@ -1,6 +1,10 @@
 # GIFアニメーションを表示しながらGeminiと対話するためのプログラムです。
 import os
 import sys
+
+# JACKオーディオエラーを回避するため、PulseAudioを使用するよう環境変数を設定
+os.environ['SDL_AUDIODRIVER'] = 'pulse'
+
 import tkinter as tk
 from PIL import Image, ImageTk
 from dotenv import load_dotenv
